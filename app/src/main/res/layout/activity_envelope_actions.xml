@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context=".EnvelopeActions">
+
+    <android.support.v7.widget.CardView
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:background="@color/darkmode_card_color"
+        app:cardBackgroundColor="@color/darkmode_card_color"
+        app:cardCornerRadius="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/darkmode_card_color"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Current Amount"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/total_amount_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:gravity="center"
+                android:text="$2,403.87"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="42sp" />
+
+            <TextView
+                android:id="@+id/goal_amount_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="Goal: 3,000"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/goal_progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="60"
+                android:scaleY="4" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.CardView
+            android:clickable="true"
+            android:id="@+id/withdraw_cardView"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:background="@color/darkmode_card_color"
+            app:cardBackgroundColor="@color/darkmode_card_color"
+            app:cardCornerRadius="6dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/darkmode_card_color"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Withdraw"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:clickable="true"
+            android:id="@+id/deposit_cardView"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:background="@color/darkmode_card_color"
+            app:cardBackgroundColor="@color/darkmode_card_color"
+            app:cardCornerRadius="6dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/darkmode_card_color"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Deposit"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Transactions"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_margin="8dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/transactions_recycleView"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/transaction_rv" />
+</LinearLayout>

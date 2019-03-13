@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@color/darkmode_forground_color">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="New Transaction"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:textColorHint="@color/colorAccent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/new_transaction_amount_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Amount"
+            android:textSize="20sp"
+            android:inputType="numberDecimal"
+            android:textColor="@color/white" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/new_transaction_update_button"
+        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update" />
+</LinearLayout>
