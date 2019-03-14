@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,7 +41,7 @@ public class TransactionActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TransactionActivity.this);
 
         FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-        Query query = rootRef.collection(DashBoardActivity.MINI_BUDGETS_NAME_LOCATION+"transactions");
+        Query query = rootRef.collection(DashBoardActivity.MINI_BUDGETS_NAME_LOCATION+"transactions").orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Transactions> options = new FirestoreRecyclerOptions.Builder<Transactions>()
                 .setQuery(query, Transactions.class)
@@ -52,6 +53,22 @@ public class TransactionActivity extends AppCompatActivity {
                 holder.dateView.setText(model.getDate());
                 holder.categoryView.setText(model.getCategory());
                 holder.amountView.setText(model.getAmount());
+
+                if(model.getTransactionType().equals("Deposit")) {
+                    holder.dateLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                    holder.dateView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                    holder.categoryLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                    holder.categoryView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                    holder.amountView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                    holder.amountLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                }else{
+                    holder.dateLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                    holder.dateView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                    holder.categoryLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                    holder.categoryView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                    holder.amountView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                    holder.amountLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                }
             }
 
             @NonNull
@@ -77,11 +94,16 @@ public class TransactionActivity extends AppCompatActivity {
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView dateView, amountView, typeView, categoryView, message;
+        TextView dateLabelView, amountLabelView, categoryLabelView;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             dateView = itemView.findViewById(R.id.date_rv_tv);
             amountView = itemView.findViewById(R.id.amount_rv_tv);
             categoryView = itemView.findViewById(R.id.category_rv_tv);
+
+            dateLabelView = itemView.findViewById(R.id.date_label_rv);
+            amountLabelView = itemView.findViewById(R.id.amount_label_rv);
+            categoryLabelView = itemView.findViewById(R.id.category_label_rv);
         }
     }
     @Override

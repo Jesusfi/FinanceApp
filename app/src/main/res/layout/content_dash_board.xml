@@ -48,26 +48,21 @@
                 android:textColor="@color/white"
                 android:textSize="42sp" />
 
-            <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/darkmode_card_color"
                 android:text="View Transactions"
-                android:textAllCaps="false"
-                android:textSize="18sp" />
+                android:textColor="@color/colorAccent"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:padding="16dp"
+                android:textStyle="bold"/>
         </LinearLayout>
-
-
     </android.support.v7.widget.CardView>
-
-
-
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:padding="8dp"
         android:text="Envelopes"
         android:textColor="@color/white"

@@ -19,4 +19,7 @@
     <color name="half_black">#00e</color>
     <color name="white_pressed">#FFDDFF</color>
     <color name="category_color_one">#091D80</color>
+
+    <color name="withdraw_color">@android:color/holo_red_light</color>
+    <color name="deposit_color">@color/colorAccent</color>
 </resources>

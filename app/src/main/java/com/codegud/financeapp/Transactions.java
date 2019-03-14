@@ -1,11 +1,17 @@
 package com.codegud.financeapp;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Date;
+
 public class Transactions {
     private String date;
     private String amount;
     private String transactionType;
     private String message;
     private String category;
+    private Timestamp timestamp;
 
     public Transactions(){
 
@@ -17,6 +23,7 @@ public class Transactions {
         this.transactionType = transactionType;
         this.message = message;
         this.category = category;
+        this.timestamp = new Timestamp(new Date());
     }
 
     public String getDate() {
@@ -57,5 +64,13 @@ public class Transactions {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

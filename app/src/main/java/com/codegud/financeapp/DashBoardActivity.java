@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -60,7 +59,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         totalAmountView = findViewById(R.id.total_amount_tv);
         totalAmountView.setText("0.00");
 
-        Toast.makeText(DashBoardActivity.this, MINI_BUDGETS_NAME_LOCATION, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(DashBoardActivity.this, MINI_BUDGETS_NAME_LOCATION, Toast.LENGTH_SHORT).show();
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DashBoardActivity.this, 2);
         rv.setLayoutManager(gridLayoutManager);
@@ -114,7 +113,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         overallAmountView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DashBoardActivity.this,TransactionActivity.class));
+                startActivity(new Intent(DashBoardActivity.this, TransactionActivity.class));
             }
         });
     }
@@ -139,17 +138,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         MyViewHolder(View itemView) {
             super(itemView);
             view = itemView;
-
             parent = view.findViewById(R.id.parent_rv_envelope_cardView);
-//            parent.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Intent intent = new Intent(DashBoardActivity.this, EnvelopeActions.class);
-//                    intent.putExtra(CATEGORY_TO_UPDATE,categoryTitleView.getText().toString());
-//                    intent.putExtra(AMOUNT_TO_UPDATE,amountView.getText().toString());
-//                    startActivity(intent);
-//                }
-//            });
 
         }
 
@@ -203,8 +192,11 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Envelope temp = document.toObject(Envelope.class);
-                                String oldTotal = totalAmountView.getText().toString();
-                                double newTotal = Double.parseDouble(oldTotal) + Double.parseDouble(temp.getAmount());
+                                String oldTotal = MoneyManager.FormatMoney(totalAmountView.getText().toString());
+                                String amountToAdd = MoneyManager.FormatMoney(temp.getAmount());
+
+
+                                String newTotal = MoneyManager.add(oldTotal,amountToAdd);
                                 totalAmountView.setText("" + newTotal);
                             }
                         } else {
@@ -225,13 +217,11 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sign_out_menu:
-                Toast.makeText(DashBoardActivity.this, "Clicked sign out", Toast.LENGTH_SHORT).show();
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(DashBoardActivity.this, LoginActivity.class));
                 finish();
                 return true;
             case R.id.settings_menu:
-                Toast.makeText(DashBoardActivity.this, "Clicked Settings", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
