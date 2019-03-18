@@ -1,83 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    app:cardBackgroundColor="@color/darkmode_card_color"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="6dp"
-    android:layout_margin="4dp">
+>
+    <TextView
+        android:id="@+id/date_test_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="01-13-1998"
+        android:textStyle="bold"
+        android:textColor="@color/secondary_text_color"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="4dp"
+        android:textSize="22sp"
+        android:visibility="gone"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:background="@color/darkmode_card_color"
+        android:visibility="gone"
+        android:id="@+id/label_layout_rv"
         android:padding="8dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/category_label_rv"
-                android:layout_width="0dp"
-                android:textSize="18sp"
-                android:layout_weight="1"
-                android:text="Category"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/amount_label_rv"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Amount"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/date_label_rv"
-                android:textSize="18sp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Date"
-                android:gravity=""
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/category_label_rv"
+            android:layout_width="0dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
             android:layout_weight="1"
-            android:layout_height="0dp"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/category_rv_tv"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Food"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/amount_rv_tv"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="500"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/date_rv_tv"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="9/9/1998"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:text="Category"
+            android:textColor="@color/secondary_text_color"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/amount_label_rv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textColor="@color/secondary_text_color"
+            android:text="Amount"
+            android:textSize="14sp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/date_label_rv"
+            android:textSize="14sp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Memo"
+            android:textColor="@color/secondary_text_color"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
-</android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_marginBottom="1px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/darkmode_card_color"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/darkmode_card_color"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/darkmode_card_color"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/category_rv_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Food"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    />
+
+                <TextView
+                    android:id="@+id/amount_rv_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="500"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                     />
+
+                <TextView
+                    android:id="@+id/date_rv_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="9/9/1998"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

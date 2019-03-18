@@ -30,6 +30,22 @@
             android:inputType="numberDecimal"
             android:textColor="@color/white" />
     </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:textColorHint="@color/colorAccent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/new_transaction_memo_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Memo"
+            android:textSize="20sp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="@color/white" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/new_transaction_update_button"

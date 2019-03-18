@@ -1,12 +1,19 @@
 package com.codegud.financeapp;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,7 +45,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
 
     public static final String CATEGORY_TO_UPDATE = "categoryToUpdate";
     public static final String AMOUNT_TO_UPDATE = "amountToUpdate";
-    public static final String MINI_BUDGETS_NAME_LOCATION = FirebaseAuth.getInstance().getCurrentUser().getUid() + "miniBudget";
+    public static String MINI_BUDGETS_NAME_LOCATION = FirebaseAuth.getInstance().getCurrentUser().getUid() + "miniBudget";
     public static final String GOAL_TO_PASS_FROM_DASH_TO_ACTIONS = "goalToPass";
     public static final String PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS = "progressToPass";
 
@@ -59,32 +66,36 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         totalAmountView = findViewById(R.id.total_amount_tv);
         totalAmountView.setText("0.00");
 
-        //Toast.makeText(DashBoardActivity.this, MINI_BUDGETS_NAME_LOCATION, Toast.LENGTH_SHORT).show();
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DashBoardActivity.this, 2);
         rv.setLayoutManager(gridLayoutManager);
-        //attempting to add realtime data retriveal
+
         FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-        Query query = rootRef.collection(MINI_BUDGETS_NAME_LOCATION);
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Query query = rootRef.collection(userID).document("BudgetInfo").collection("budgets");
 
         FirestoreRecyclerOptions<Envelope> options = new FirestoreRecyclerOptions.Builder<Envelope>()
                 .setQuery(query, Envelope.class)
                 .build();
 
-
         adapter = new FirestoreRecyclerAdapter<Envelope, MyViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull final Envelope model) {
+            protected void onBindViewHolder(@NonNull final MyViewHolder holder, int position, @NonNull final Envelope model) {
                 holder.setMiniBudgetItem(model.getCategory(), model.getAmount(), model.getProgress());
                 holder.parent.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(DashBoardActivity.this, EnvelopeActions.class);
+
+                        Intent intent = new Intent(DashBoardActivity.this,EnvelopeActions.class);
                         intent.putExtra(CATEGORY_TO_UPDATE, model.getCategory());
                         intent.putExtra(AMOUNT_TO_UPDATE, model.getAmount());
                         intent.putExtra(GOAL_TO_PASS_FROM_DASH_TO_ACTIONS, model.getGoal());
                         intent.putExtra(PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS, model.getProgress());
-                        startActivity(intent);
+
+                        Pair<View,String> p1 = Pair.create((View) holder.parent,"cardTotalAmount");
+
+                        ActivityOptionsCompat options = (ActivityOptionsCompat) ActivityOptionsCompat.
+                                makeSceneTransitionAnimation(DashBoardActivity.this, p1);
+                        startActivity(intent, options.toBundle());
                     }
                 });
             }
@@ -118,14 +129,11 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         });
     }
 
-    /**
-     * @param categoryName is the result of the addEnvelopeDialogFragment
-     *                     which is then saved to Firestore database
-     */
     @Override
     public void addNewEnvelope(String categoryName, String goal) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(MINI_BUDGETS_NAME_LOCATION).document(categoryName).set(new Envelope(categoryName, "0.00", goal));
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection(userID).document("BudgetInfo").collection("budgets").document(categoryName).set(new Envelope(categoryName, "0.00", goal));
     }
 
 
@@ -150,6 +158,22 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
             amountView.setText(amount);
 
             progressBar = view.findViewById(R.id.progressBar);
+            if(progress >= 100){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        int color = ContextCompat.getColor(DashBoardActivity.this,R.color.progress_goal_met);
+                        progressBar.setProgressTintList(ColorStateList.valueOf(color));
+                    }
+                }
+            }else if(progress < 100){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        int color = ContextCompat.getColor(DashBoardActivity.this,R.color.progress_goal_not_yet_met);
+                        progressBar.setProgressTintList(ColorStateList.valueOf(color));
+                    }
+                }
+            }
+
             progressBar.setMax(100);
             progressBar.setProgress(progress);
 
@@ -182,7 +206,8 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
 
     private void updateTotalAmountView() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(MINI_BUDGETS_NAME_LOCATION)
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection(userID).document("BudgetInfo").collection("budgets")
                 .whereGreaterThan("amount", "0.00")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -194,7 +219,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                                 Envelope temp = document.toObject(Envelope.class);
                                 String oldTotal = MoneyManager.FormatMoney(totalAmountView.getText().toString());
                                 String amountToAdd = MoneyManager.FormatMoney(temp.getAmount());
-
 
                                 String newTotal = MoneyManager.add(oldTotal,amountToAdd);
                                 totalAmountView.setText("" + newTotal);

@@ -3,7 +3,7 @@
     <!--App Theme Colors-->
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#212121</color>
-    <color name="colorAccent">#7fff7f  </color>
+    <color name="colorAccent">#77dd77   </color>
     <color name="primary_light">#D1C4E9</color>
 
     <!--Text and icon colors-->
@@ -20,6 +20,12 @@
     <color name="white_pressed">#FFDDFF</color>
     <color name="category_color_one">#091D80</color>
 
-    <color name="withdraw_color">@android:color/holo_red_light</color>
+    <color name="withdraw_color">#ff6961</color>
     <color name="deposit_color">@color/colorAccent</color>
+
+    <color name="progress_goal_met">@color/colorAccent</color>
+    <color name="progress_goal_not_yet_met">@android:color/holo_orange_light</color>
+    <color name="progress_goal_over">#a3daf8 </color>
+    <color name="secondary_headers_color">#B3FFFFFF</color>
+    <color name="secondary_text_color">#80FFFFFF</color>
 </resources>
