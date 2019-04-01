@@ -1,5 +1,6 @@
 package com.codegud.financeapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
@@ -8,13 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,15 +55,13 @@ import javax.annotation.Nullable;
 public class EnvelopeActions extends AppCompatActivity implements AddTransactionListener {
 
     private String category;
-//    private String amount, goal;
-//    private int progress;
+
     private FirebaseFirestore db;
     private TextView currentAmountView;
 
     private FirestoreRecyclerAdapter<Transactions, MyViewHolder> adapter; //Firebase UI Firestore Adapter
     private ProgressBar goalProgressBar;
 
-    //TODO instead of populating the views with information from the bundle - update to listen an populate views in real time
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,13 +72,10 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db = FirebaseFirestore.getInstance();
-        String userID  = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Intent intent = getIntent();
         category = intent.getExtras().getString(DashBoardActivity.CATEGORY_TO_UPDATE);
-//        amount = intent.getExtras().getString(DashBoardActivity.AMOUNT_TO_UPDATE);
-//        goal = intent.getExtras().getString(DashBoardActivity.GOAL_TO_PASS_FROM_DASH_TO_ACTIONS);
-//        progress = intent.getExtras().getInt(DashBoardActivity.PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS);
 
         getSupportActionBar().setTitle(category);//This is located b/c it waits for the intent
 
@@ -90,20 +86,19 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         CardView depositView = findViewById(R.id.deposit_cardView);
         final TextView percentProgressView = findViewById(R.id.progress_amount_tv);
 
-
         DocumentReference docReference = db.collection(userID).document("BudgetInfo").collection("budgets").document(category);
         docReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Envelope currentItem = documentSnapshot.toObject(Envelope.class);
                 currentAmountView.setText(currentItem.getAmount());
-                currentGoalView.setText(MoneyManager.FormatMoney(currentItem.getGoal()) );
+                currentGoalView.setText(MoneyManager.FormatMoney(currentItem.getGoal()));
                 goalProgressBar.setProgress(currentItem.getProgress());
 
-                if(currentItem.getProgress() < 100){
+                if (currentItem.getProgress() < 100) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            int color = ContextCompat.getColor(EnvelopeActions.this,R.color.progress_goal_not_yet_met);
+                            int color = ContextCompat.getColor(EnvelopeActions.this, R.color.progress_goal_not_yet_met);
                             goalProgressBar.setProgressTintList(ColorStateList.valueOf(color));
                         }
                     }
@@ -123,19 +118,20 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
                 if (model != null) {
                     currentAmountView.setText(model.getAmount());
                     goalProgressBar.setProgress(model.getProgress());
-                    percentProgressView.setText(""+model.getProgress()+"%");
+                    percentProgressView.setText("" + model.getProgress() + "%");
+                    currentGoalView.setText(MoneyManager.FormatMoney(model.getGoal()));
 
-                    if(model.getProgress() < 100){
+                    if (model.getProgress() < 100) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                int color = ContextCompat.getColor(EnvelopeActions.this,R.color.progress_goal_not_yet_met);
+                                int color = ContextCompat.getColor(EnvelopeActions.this, R.color.progress_goal_not_yet_met);
                                 goalProgressBar.setProgressTintList(ColorStateList.valueOf(color));
                             }
                         }
-                    }else{
+                    } else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                int color = ContextCompat.getColor(EnvelopeActions.this,R.color.progress_goal_met);
+                                int color = ContextCompat.getColor(EnvelopeActions.this, R.color.progress_goal_met);
                                 goalProgressBar.setProgressTintList(ColorStateList.valueOf(color));
                             }
                         }
@@ -202,41 +198,33 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
 
                 sdf.applyPattern(NEW_FORMAT);
                 String newDateString = sdf.format(d);
-                if(position ==  0){
+                if (position == 0) {
                     holder.dateTestView.setText(newDateString);
                     holder.dateTestView.setVisibility(View.VISIBLE);
                     //Label Views
                     holder.labelLayout.setVisibility(View.VISIBLE);
 
-                }else if(position > 0){
-                    Transactions item = getItem(position-1);
-                    if(!model.getDate().equals(item.getDate())){
+                } else if (position > 0) {
+                    Transactions item = getItem(position - 1);
+                    if (!model.getDate().equals(item.getDate())) {
                         holder.dateTestView.setText(newDateString);
                         holder.dateTestView.setVisibility(View.VISIBLE);
 
-                        //label views
-                        holder.labelLayout.setVisibility(View.VISIBLE);
-                    }else{
+                        holder.labelLayout.setVisibility(View.VISIBLE);//label views
+                    } else {
                         holder.dateTestView.setVisibility(View.GONE);
-                        //label views
-                        holder.labelLayout.setVisibility(View.GONE);
+                        holder.labelLayout.setVisibility(View.GONE);//label views
                     }
                 }
 
-                if(model.getTransactionType().equals("Deposit")) {
-                   // holder.dateLabelView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
+                if (model.getTransactionType().equals("Deposit")) {
                     holder.dataView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
-                    //holder.categoryLabelView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
                     holder.categoryView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
                     holder.amountView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
-                   // holder.amountLabelView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
-                }else{
-                 //   holder.dateLabelView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
+                } else {
                     holder.dataView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
-                  //  holder.categoryLabelView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
                     holder.categoryView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
                     holder.amountView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
-                  //  holder.amountLabelView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
                 }
             }
 
@@ -253,10 +241,10 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         nestedScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
-                if(nestedScrollView.getScrollY() > 200){
+                if (nestedScrollView.getScrollY() > 200) {
                     getSupportActionBar().setElevation(10);
                     getSupportActionBar().setSubtitle(currentAmountView.getText().toString());
-                }else{
+                } else {
                     getSupportActionBar().setSubtitle(null);
                 }
             }
@@ -289,9 +277,43 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete_item:
-                deleteEntry(db, category);
-                deleteTransactions(db,category);
-                finish();
+
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                //Yes button clicked
+                                deleteEntry(db, category);
+                                deleteTransactions(db, category);
+                                finish();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                dialog.dismiss();
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(EnvelopeActions.this);
+                builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
+
+
+                return true;
+            case R.id.update_goal:
+                UpdateGoalDialogFragment updateGoalDialogFragment = new UpdateGoalDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("category", category);
+                updateGoalDialogFragment.setArguments(bundle);
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                updateGoalDialogFragment.show(fragmentManager, "Tag");
+
                 return true;
             case android.R.id.home:
                 finish();
@@ -309,7 +331,7 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     for (DocumentSnapshot document : task.getResult()) {
                         reference.document(document.getId()).delete();
                     }
@@ -336,7 +358,7 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         reference.update("amount", finalEndResult).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-               // currentAmountView.setText(finalEndResult);
+                // currentAmountView.setText(finalEndResult);
                 createNewTransaction(formatStringTransactionAmount, type, memo);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -352,7 +374,7 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
         String dateString = formatter.format(todayDate);
 
-        if(TextUtils.isEmpty(memo)){
+        if (TextUtils.isEmpty(memo)) {
             memo = "None";
         }
         Transactions transactions = new Transactions(dateString, amount, type, memo, category);
@@ -367,7 +389,7 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                       // finish();
+                        // finish();
                         adapter.notifyDataSetChanged();
 
                     }
@@ -376,10 +398,11 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
 
     private class MyViewHolder extends RecyclerView.ViewHolder {
         TextView categoryView, amountView, dataView;
-        TextView categoryLabelView,amountLabelView,dateLabelView;
+        TextView categoryLabelView, amountLabelView, dateLabelView;
         LinearLayout labelLayout;
         TextView dateTestView;
-        public MyViewHolder(@NonNull View itemView) {
+
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             categoryView = itemView.findViewById(R.id.category_rv_tv);

@@ -53,7 +53,8 @@ public class AddEnvelopDialogFragment extends DialogFragment {
                 String category = addCategoryView.getText().toString();
                 String goal = addGoalView.getText().toString();
                 if(!TextUtils.isEmpty(category) && !TextUtils.isEmpty(goal)){
-                    mCallback.addNewEnvelope(category,goal);
+                    String formatedGoal = MoneyManager.FormatMoney(goal);
+                    mCallback.addNewEnvelope(category,formatedGoal);
                     dismiss();
                 }else{
                     Toast.makeText(getActivity(),"Please enter amount and goal",Toast.LENGTH_SHORT).show();

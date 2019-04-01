@@ -79,7 +79,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="% Progress"
+                        android:text="Progress"
                         android:textColor="@color/secondary_text_color"
                         android:textSize="14sp" />
                 </LinearLayout>

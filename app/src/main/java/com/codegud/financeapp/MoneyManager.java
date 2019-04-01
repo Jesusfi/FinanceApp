@@ -6,9 +6,8 @@ public class MoneyManager {
 
     public static String FormatMoney(String moneyToBeFormated){
         DecimalFormat d = new DecimalFormat("0.00");
-        moneyToBeFormated = moneyToBeFormated.replace(",","");
-        String formatedAmount = d.format(Double.parseDouble(moneyToBeFormated));
-        return formatedAmount;
+        moneyToBeFormated = moneyToBeFormated.replaceAll("[$,]","");
+        return d.format(Double.parseDouble(moneyToBeFormated));
     }
     public static String add(String oldAmount, String amountToAdd){
         double sum = Double.parseDouble(oldAmount) + Double.parseDouble(amountToAdd);
