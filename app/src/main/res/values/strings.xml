@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Finance App</string>
+    <string name="app_name">BuildABudget</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
