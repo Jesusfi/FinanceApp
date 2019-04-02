@@ -30,11 +30,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:capitalize="words"
                 android:hint="Category"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/white"
-              />
+                android:textColor="@color/white" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
