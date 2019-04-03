@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -59,13 +60,14 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
     private FirestoreRecyclerAdapter<Envelope, MyViewHolder> adapter; //Firebase UI Firestore Adapter
     TextView totalAmountView;
 
+    Menu optionsMenu;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
 
-        createNotificationChannel();
+        createNotificationChannel();//create notification channel for Oreo and higher
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Overview");
@@ -240,6 +242,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        this.optionsMenu = menu;
         inflater.inflate(R.menu.dashboard_menu, menu);
         return true;
     }
@@ -255,12 +258,29 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
             case R.id.settings_menu:
                 return true;
             case R.id.notificaiton_menu:
-
-
+                 if(isNotificationScheduled()){
+                     Toast.makeText(DashBoardActivity.this, "Notification canceled", Toast.LENGTH_SHORT).show();
+                     cancelNotification();
+                     optionsMenu.findItem(R.id.notificaiton_menu).setIcon(ContextCompat.getDrawable(DashBoardActivity.this,R.drawable.ic_notifications_paused_white_24dp));
+                 }else{
+                     Toast.makeText(DashBoardActivity.this, "Notification set", Toast.LENGTH_SHORT).show();
+                     scheduleNotification(createNotification(),100);
+                     optionsMenu.findItem(R.id.notificaiton_menu).setIcon(ContextCompat.getDrawable(DashBoardActivity.this, R.drawable.ic_notifications_white_24dp));
+                 }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(isNotificationScheduled()){
+            menu.findItem(R.id.notificaiton_menu).setIcon(ContextCompat.getDrawable(DashBoardActivity.this,R.drawable.ic_notifications_white_24dp));
+        }else{
+            menu.findItem(R.id.notificaiton_menu).setIcon(ContextCompat.getDrawable(DashBoardActivity.this,R.drawable.ic_notifications_paused_white_24dp));
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     void showNotification(String title, String content) {
@@ -315,15 +335,29 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 //        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
-        // Set the alarm to start at approximately 2:00 p.m.
+        // Set the alarm to start at approximately 10:00 a.m.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
 
         // With setInexactRepeating(), you have to use one of the AlarmManager interval
         // constants--in this case, AlarmManager.INTERVAL_DAY.
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pendingIntent);
+
+    }
+    private boolean isNotificationScheduled(){
+        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        return (PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_NO_CREATE) !=null);
+
+    }
+    private void cancelNotification(){
+        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        pendingIntent.cancel();
 
     }
 }
