@@ -91,8 +91,8 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Envelope currentItem = documentSnapshot.toObject(Envelope.class);
-                currentAmountView.setText(currentItem.getAmount());
-                currentGoalView.setText(MoneyManager.FormatMoney(currentItem.getGoal()));
+                currentAmountView.setText(MoneyManager.formatMoneyForDisplay(currentItem.getAmount()));
+                currentGoalView.setText(MoneyManager.formatMoneyForCalculations(currentItem.getGoal()));
                 goalProgressBar.setProgress(currentItem.getProgress());
 
                 if (currentItem.getProgress() < 100) {
@@ -116,10 +116,10 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Envelope model = documentSnapshot.toObject(Envelope.class);
                 if (model != null) {
-                    currentAmountView.setText(model.getAmount());
+                    currentAmountView.setText(MoneyManager.formatMoneyForDisplay(model.getAmount()));
                     goalProgressBar.setProgress(model.getProgress());
                     percentProgressView.setText("" + model.getProgress() + "%");
-                    currentGoalView.setText(MoneyManager.FormatMoney(model.getGoal()));
+                    currentGoalView.setText(MoneyManager.formatMoneyForCalculations(model.getGoal()));
 
                     if (model.getProgress() < 100) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -344,8 +344,8 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
     public void addNewTransactionAndUpdateEnvelope(String amountOfTransaction, final String type, final String memo) {
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final DocumentReference reference = db.collection(userID).document("BudgetInfo").collection("budgets").document(category);
-        String formatStringOldAmount = MoneyManager.FormatMoney(currentAmountView.getText().toString());
-        final String formatStringTransactionAmount = MoneyManager.FormatMoney(amountOfTransaction);
+        String formatStringOldAmount = MoneyManager.formatMoneyForCalculations(currentAmountView.getText().toString());
+        final String formatStringTransactionAmount = MoneyManager.formatMoneyForCalculations(amountOfTransaction);
 
         String endResult = "";
         if (type.equals("Deposit")) {

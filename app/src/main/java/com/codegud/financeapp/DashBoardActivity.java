@@ -1,13 +1,13 @@
 package com.codegud.financeapp;
 
-import android.app.ActivityOptions;
+import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,9 +16,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -44,15 +44,17 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Calendar;
+
 public class DashBoardActivity extends AppCompatActivity implements AddCategoryListener {
 
     private static final String TAG = "TAD";
 
     public static final String CATEGORY_TO_UPDATE = "categoryToUpdate";
     public static final String AMOUNT_TO_UPDATE = "amountToUpdate";
-    public static String MINI_BUDGETS_NAME_LOCATION = FirebaseAuth.getInstance().getCurrentUser().getUid() + "miniBudget";
     public static final String GOAL_TO_PASS_FROM_DASH_TO_ACTIONS = "goalToPass";
     public static final String PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS = "progressToPass";
+    private static final String CHANNEL_ID = "Default";
 
     private FirestoreRecyclerAdapter<Envelope, MyViewHolder> adapter; //Firebase UI Firestore Adapter
     TextView totalAmountView;
@@ -63,13 +65,14 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
 
+        createNotificationChannel();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Overview");
         setSupportActionBar(toolbar);
 
         RecyclerView rv = findViewById(R.id.rv_envelopes);
         totalAmountView = findViewById(R.id.total_amount_tv);
-        totalAmountView.setText("0.00");
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DashBoardActivity.this, 2);
         rv.setLayoutManager(gridLayoutManager);
@@ -90,16 +93,15 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                     @Override
                     public void onClick(View view) {
 
-                        Intent intent = new Intent(DashBoardActivity.this,EnvelopeActions.class);
+                        Intent intent = new Intent(DashBoardActivity.this, EnvelopeActions.class);
                         intent.putExtra(CATEGORY_TO_UPDATE, model.getCategory());
                         intent.putExtra(AMOUNT_TO_UPDATE, model.getAmount());
                         intent.putExtra(GOAL_TO_PASS_FROM_DASH_TO_ACTIONS, model.getGoal());
                         intent.putExtra(PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS, model.getProgress());
 
-                        Pair<View,String> p1 = Pair.create((View) holder.parent,"cardTotalAmount");
+                        Pair<View, String> p1 = Pair.create((View) holder.parent, "cardTotalAmount");
 
-                        ActivityOptionsCompat options = (ActivityOptionsCompat) ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(DashBoardActivity.this, p1);
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(DashBoardActivity.this, p1);
                         startActivity(intent, options.toBundle());
                     }
                 });
@@ -123,8 +125,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 addEnvelopDialogFragment.show(fragmentManager, "TAG");
 
-                //showNotification("Update Your Budget","This is a reminder to update your budget ");
-
+                //scheduleNotification(createNotification(), 5000);
             }
         });
 
@@ -144,7 +145,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         db.collection(userID).document("BudgetInfo").collection("budgets").document(categoryName).set(new Envelope(categoryName, "0.00", goal));
     }
 
-
     private class MyViewHolder extends RecyclerView.ViewHolder {
         private View view;
         private CardView parent;
@@ -163,20 +163,20 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
             categoryTitleView.setText(category);
 
             amountView = view.findViewById(R.id.amount_tv);
-            amountView.setText(amount);
+            amountView.setText(MoneyManager.formatMoneyForDisplay(amount));
 
             progressBar = view.findViewById(R.id.progressBar);
-            if(progress >= 100){
+            if (progress >= 100) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        int color = ContextCompat.getColor(DashBoardActivity.this,R.color.progress_goal_met);
+                        int color = ContextCompat.getColor(DashBoardActivity.this, R.color.progress_goal_met);
                         progressBar.setProgressTintList(ColorStateList.valueOf(color));
                     }
                 }
-            }else if(progress < 100){
+            } else if (progress < 100) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        int color = ContextCompat.getColor(DashBoardActivity.this,R.color.progress_goal_not_yet_met);
+                        int color = ContextCompat.getColor(DashBoardActivity.this, R.color.progress_goal_not_yet_met);
                         progressBar.setProgressTintList(ColorStateList.valueOf(color));
                     }
                 }
@@ -209,7 +209,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     private void updateTotalAmountView() {
@@ -225,11 +224,11 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Envelope temp = document.toObject(Envelope.class);
-                                String oldTotal = MoneyManager.FormatMoney(totalAmountView.getText().toString());
-                                String amountToAdd = MoneyManager.FormatMoney(temp.getAmount());
+                                String oldTotal = MoneyManager.formatMoneyForCalculations(totalAmountView.getText().toString());
+                                String amountToAdd = MoneyManager.formatMoneyForCalculations(temp.getAmount());
 
-                                String newTotal = MoneyManager.add(oldTotal,amountToAdd);
-                                totalAmountView.setText("" + newTotal);
+                                String newTotal = MoneyManager.add(oldTotal, amountToAdd);
+                                totalAmountView.setText(MoneyManager.formatMoneyForDisplay(newTotal));
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -255,28 +254,76 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                 return true;
             case R.id.settings_menu:
                 return true;
+            case R.id.notificaiton_menu:
+
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
     void showNotification(String title, String content) {
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("default",
-                    "YOUR_CHANNEL_NAME",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
-            mNotificationManager.createNotificationChannel(channel);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(1, createNotification());
+
+
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String description = "These are notifications for my build a budget app";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "BuildABudgetNotifcations", importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "default")
-                .setSmallIcon(R.drawable.logo) // notification icon
-                .setContentTitle(title) // title for notification
-                .setContentText(content)// message for notification
-                .setAutoCancel(true); // clear notification after click
-        Intent intent = new Intent(getApplicationContext(), DashBoardActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pi);
-        mNotificationManager.notify(0, mBuilder.build());
+    }
+
+    public Notification createNotification() {
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, DashBoardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications_white_24dp)
+                .setContentTitle("Update your Budget")
+                .setContentText("Click to open BuildABudget")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)// Set the intent that will fire when the user taps the notification
+                .setAutoCancel(true);//tap will clear notification
+
+        return builder.build();
+    }
+
+    private void scheduleNotification(Notification notification, int delay) {
+
+        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+//        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+
+        // Set the alarm to start at approximately 2:00 p.m.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 22);
+
+        // With setInexactRepeating(), you have to use one of the AlarmManager interval
+        // constants--in this case, AlarmManager.INTERVAL_DAY.
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
+
     }
 }

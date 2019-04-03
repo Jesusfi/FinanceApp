@@ -48,7 +48,7 @@ public class Envelope {
         String tempGoal = goal.replace(",","");
 
         double currentAmount  = Double.parseDouble(tempAmount);
-        double currentGoal =  Double.parseDouble(MoneyManager.FormatMoney(tempGoal));
+        double currentGoal =  Double.parseDouble(MoneyManager.formatMoneyForCalculations(tempGoal));
 
         double progress = ((currentAmount*100)/currentGoal);
         return (int)progress;

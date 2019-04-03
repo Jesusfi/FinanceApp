@@ -1,6 +1,5 @@
 package com.codegud.financeapp;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -53,7 +52,7 @@ public class AddEnvelopDialogFragment extends DialogFragment {
                 String category = addCategoryView.getText().toString();
                 String goal = addGoalView.getText().toString();
                 if(!TextUtils.isEmpty(category) && !TextUtils.isEmpty(goal)){
-                    String formatedGoal = MoneyManager.FormatMoney(goal);
+                    String formatedGoal = MoneyManager.formatMoneyForCalculations(goal);
                     mCallback.addNewEnvelope(category,formatedGoal);
                     dismiss();
                 }else{
