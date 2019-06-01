@@ -6,7 +6,6 @@ import android.widget.EditText;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 
 public class NumberTextWatcher implements TextWatcher {
 
@@ -17,11 +16,10 @@ public class NumberTextWatcher implements TextWatcher {
     private EditText et;
     private String current = "";
 
-    public NumberTextWatcher(EditText et)
-    {
+    public NumberTextWatcher(EditText et) {
         DecimalFormat dec = new DecimalFormat("0.00");
 
-        this.et =et;
+        this.et = et;
     }
 
     @SuppressWarnings("unused")

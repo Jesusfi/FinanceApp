@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private ProgressBar loginProgressBar;
 
     //Firebase Authentication
     private FirebaseAuth mAuth;
@@ -39,16 +41,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseApp.initializeApp(this);
-
+        FirebaseApp.initializeApp(this);// Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
     }
 
     private void updateUI(FirebaseUser currentUser) {
         if(currentUser != null){
-            startActivity(new Intent(LoginActivity.this,DashBoardActivity.class));
+            //TODO find out why start activity is starting two of the same activity?
+            //Network?
+            startActivity(new Intent(LoginActivity.this,DashBoardActivity.class).setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
             finish();
         }
     }
@@ -63,9 +65,11 @@ public class LoginActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
         mPasswordView = findViewById(R.id.password);
+        loginProgressBar = findViewById(R.id.login_progressBar);
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -94,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -131,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // perform the user login attempt.
             signInUser(email,password);
+            loginProgressBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -151,11 +155,14 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            loginProgressBar.setVisibility(View.INVISIBLE);
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
+                            loginProgressBar.setVisibility(View.INVISIBLE);
                         }
                     }
                 });

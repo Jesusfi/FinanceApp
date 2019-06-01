@@ -11,6 +11,14 @@
 
     <!-- Login progress -->
 
+    <ProgressBar
+        android:id="@+id/login_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"

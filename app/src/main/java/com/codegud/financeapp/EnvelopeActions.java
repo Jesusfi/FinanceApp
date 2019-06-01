@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -201,8 +202,6 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
                 if (position == 0) {
                     holder.dateTestView.setText(newDateString);
                     holder.dateTestView.setVisibility(View.VISIBLE);
-                    //Label Views
-                    holder.labelLayout.setVisibility(View.VISIBLE);
 
                 } else if (position > 0) {
                     Transactions item = getItem(position - 1);
@@ -210,20 +209,16 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
                         holder.dateTestView.setText(newDateString);
                         holder.dateTestView.setVisibility(View.VISIBLE);
 
-                        holder.labelLayout.setVisibility(View.VISIBLE);//label views
                     } else {
                         holder.dateTestView.setVisibility(View.GONE);
-                        holder.labelLayout.setVisibility(View.GONE);//label views
                     }
                 }
 
                 if (model.getTransactionType().equals("Deposit")) {
-                    holder.dataView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
-                    holder.categoryView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
+                    holder.transactionTypeIndicatorView.setImageResource(R.drawable.ic_arrow_deposit_green_24dp);
                     holder.amountView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.deposit_color));
                 } else {
-                    holder.dataView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
-                    holder.categoryView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
+                    holder.transactionTypeIndicatorView.setImageResource(R.drawable.ic_arrow_downward_black_24dp);
                     holder.amountView.setTextColor(ContextCompat.getColor(EnvelopeActions.this, R.color.withdraw_color));
                 }
             }
@@ -277,8 +272,6 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete_item:
-
-
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -301,9 +294,6 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
                 AlertDialog.Builder builder = new AlertDialog.Builder(EnvelopeActions.this);
                 builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show();
-
-
-
                 return true;
             case R.id.update_goal:
                 UpdateGoalDialogFragment updateGoalDialogFragment = new UpdateGoalDialogFragment();
@@ -389,7 +379,6 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        // finish();
                         adapter.notifyDataSetChanged();
 
                     }
@@ -398,10 +387,10 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
 
     private class MyViewHolder extends RecyclerView.ViewHolder {
         TextView categoryView, amountView, dataView;
-        TextView categoryLabelView, amountLabelView, dateLabelView;
+        TextView categoryLabelView, amountLabelView;
         LinearLayout labelLayout;
         TextView dateTestView;
-
+        ImageView transactionTypeIndicatorView;
         MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -411,10 +400,11 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
 
             categoryLabelView = itemView.findViewById(R.id.category_label_rv);
             amountLabelView = itemView.findViewById(R.id.amount_label_rv);
-            dateLabelView = itemView.findViewById(R.id.date_label_rv);
 
             labelLayout = itemView.findViewById(R.id.label_layout_rv);
             dateTestView = itemView.findViewById(R.id.date_test_rv);
+
+            transactionTypeIndicatorView = itemView.findViewById(R.id.transaction_type_indicator_imageView);
         }
     }
 

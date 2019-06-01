@@ -52,9 +52,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
     private static final String TAG = "TAD";
 
     public static final String CATEGORY_TO_UPDATE = "categoryToUpdate";
-    public static final String AMOUNT_TO_UPDATE = "amountToUpdate";
-    public static final String GOAL_TO_PASS_FROM_DASH_TO_ACTIONS = "goalToPass";
-    public static final String PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS = "progressToPass";
     private static final String CHANNEL_ID = "Default";
 
     private FirestoreRecyclerAdapter<Envelope, MyViewHolder> adapter; //Firebase UI Firestore Adapter
@@ -97,9 +94,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
 
                         Intent intent = new Intent(DashBoardActivity.this, EnvelopeActions.class);
                         intent.putExtra(CATEGORY_TO_UPDATE, model.getCategory());
-                        intent.putExtra(AMOUNT_TO_UPDATE, model.getAmount());
-                        intent.putExtra(GOAL_TO_PASS_FROM_DASH_TO_ACTIONS, model.getGoal());
-                        intent.putExtra(PROGRESS_TO_PASS_FROM_DASH_TO_ACTIONS, model.getProgress());
 
                         Pair<View, String> p1 = Pair.create((View) holder.parent, "cardTotalAmount");
 
@@ -126,8 +120,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
                 AddEnvelopDialogFragment addEnvelopDialogFragment = new AddEnvelopDialogFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 addEnvelopDialogFragment.show(fragmentManager, "TAG");
-
-                //scheduleNotification(createNotification(), 5000);
             }
         });
 
@@ -186,7 +178,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
 
             progressBar.setMax(100);
             progressBar.setProgress(progress);
-
 
         }
     }
@@ -288,7 +279,6 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(1, createNotification());
 
-
     }
 
     private void createNotificationChannel() {
@@ -330,10 +320,7 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-//        long futureInMillis = SystemClock.elapsedRealtime() + delay;
-
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
         // Set the alarm to start at approximately 10:00 a.m.
         Calendar calendar = Calendar.getInstance();
@@ -358,6 +345,5 @@ public class DashBoardActivity extends AppCompatActivity implements AddCategoryL
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
-
     }
 }

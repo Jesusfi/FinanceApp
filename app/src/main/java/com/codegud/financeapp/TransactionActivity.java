@@ -12,16 +12,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.Transaction;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,7 +40,6 @@ public class TransactionActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         transactionRecyclerView = findViewById(R.id.transactions_rv);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TransactionActivity.this);
 
@@ -60,7 +58,6 @@ public class TransactionActivity extends AppCompatActivity {
                 holder.categoryView.setText(model.getCategory());
                 holder.amountView.setText(model.getAmount());
 
-
                 String OLD_FORMAT = "MM-dd-yyyy";
                 String NEW_FORMAT = "MMMM d, yyyy";
 
@@ -76,42 +73,26 @@ public class TransactionActivity extends AppCompatActivity {
                 String newDateString = sdf.format(d);
 
 
-                if(position ==  0){
+                if (position == 0) {
                     holder.dateTestView.setText(newDateString);
                     holder.dateTestView.setVisibility(View.VISIBLE);
-                    //Label Views
-                    holder.labelLayout.setVisibility(View.VISIBLE);
 
-                }else if(position > 0){
-                    Transactions item = getItem(position-1);
-                    if(!model.getDate().equals(item.getDate())){
+                } else if (position > 0) {
+                    Transactions item = getItem(position - 1);
+                    if (!model.getDate().equals(item.getDate())) {
                         holder.dateTestView.setText(newDateString);
                         holder.dateTestView.setVisibility(View.VISIBLE);
-
-                        //label views
-                        holder.labelLayout.setVisibility(View.VISIBLE);
-                    }else{
+                    } else {
                         holder.dateTestView.setVisibility(View.GONE);
-                        //label views
-                        holder.labelLayout.setVisibility(View.GONE);
                     }
                 }
 
-
-                if(model.getTransactionType().equals("Deposit")) {
-                   // holder.dateLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
-                    holder.dateView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
-                  //  holder.categoryLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
-                    holder.categoryView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
+                if (model.getTransactionType().equals("Deposit")) {
+                    holder.transactionTypeIndicatorView.setImageResource(R.drawable.ic_arrow_deposit_green_24dp);
                     holder.amountView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
-                  //  holder.amountLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.deposit_color));
-                }else{
-                  //  holder.dateLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
-                    holder.dateView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
-                  //  holder.categoryLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
-                    holder.categoryView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
+                } else {
+                    holder.transactionTypeIndicatorView.setImageResource(R.drawable.ic_arrow_downward_black_24dp);
                     holder.amountView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
-                  //  holder.amountLabelView.setTextColor(ContextCompat.getColor(TransactionActivity.this, R.color.withdraw_color));
                 }
             }
 
@@ -141,20 +122,24 @@ public class TransactionActivity extends AppCompatActivity {
         TextView dateLabelView, amountLabelView, categoryLabelView;
         TextView dateTestView;
         LinearLayout labelLayout;
+        ImageView transactionTypeIndicatorView;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             dateView = itemView.findViewById(R.id.date_rv_tv);
             amountView = itemView.findViewById(R.id.amount_rv_tv);
             categoryView = itemView.findViewById(R.id.category_rv_tv);
 
-            dateLabelView = itemView.findViewById(R.id.date_label_rv);
+            //dateLabelView = itemView.findViewById(R.id.date_label_rv);
             amountLabelView = itemView.findViewById(R.id.amount_label_rv);
             categoryLabelView = itemView.findViewById(R.id.category_label_rv);
 
             dateTestView = itemView.findViewById(R.id.date_test_rv);
             labelLayout = itemView.findViewById(R.id.label_layout_rv);
+            transactionTypeIndicatorView = itemView.findViewById(R.id.transaction_type_indicator_imageView);
         }
     }
+
     @Override
     protected void onStart() {
         super.onStart();

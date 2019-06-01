@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
             android:paddingTop="4dp"
+            android:singleLine="true"
             android:text="Rent"
             android:textAlignment="textStart"
             android:textAllCaps="false"
