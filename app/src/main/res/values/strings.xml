@@ -14,4 +14,17 @@
     </string>
     <string name="title_activity_dash_board">DashBoardActivity</string>
     <string name="title_activity_transaction">Transactions</string>
+    <string name="category">Category</string>
+    <string name="goal_amount_text">Goal Amount</string>
+    <string name="application_logo_image_content_description">Application Logo</string>
+    <string name="total_amount_text">Total Amount</string>
+    <string name="test_amount_text">$2,403.87</string>
+    <string name="view_transactions_text">View Transactions</string>
+    <string name="envelopes_text">Envelopes</string>
+    <string name="new_transaction_text">New Transaction</string>
+    <string name="enter_amount_text">Enter Amount</string>
+    <string name="enter_memo_text">Enter Memo</string>
+    <string name="update_text">Update</string>
+    <string name="test_rent_text">Rent</string>
+    <string name="test_2000_text">2000.00</string>
 </resources>

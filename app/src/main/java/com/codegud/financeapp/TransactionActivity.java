@@ -1,11 +1,16 @@
 package com.codegud.financeapp;
 
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,7 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -25,12 +32,11 @@ import com.google.firebase.firestore.Query;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class TransactionActivity extends AppCompatActivity {
     RecyclerView transactionRecyclerView;
     private FirestoreRecyclerAdapter<Transactions, TransactionActivity.MyViewHolder> adapter; //Firebase UI Firestore Adapter
-    public static final String TRANSACTIONS_LOCATION = FirebaseAuth.getInstance().getCurrentUser().getUid() + "transactions";
-    String dateToCheck = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,7 @@ public class TransactionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_transaction);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         transactionRecyclerView = findViewById(R.id.transactions_rv);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TransactionActivity.this);
@@ -118,25 +124,46 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView dateView, amountView, typeView, categoryView, message;
-        TextView dateLabelView, amountLabelView, categoryLabelView;
+        TextView dateView, amountView, categoryView;
+        TextView amountLabelView, categoryLabelView;
         TextView dateTestView;
-        LinearLayout labelLayout;
+        LinearLayout labelLayout, parentLayout;
         ImageView transactionTypeIndicatorView;
+        CardView cardView;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            parentLayout = itemView.findViewById(R.id.parent);
+            cardView = itemView.findViewById(R.id.cardView);
+
             dateView = itemView.findViewById(R.id.date_rv_tv);
             amountView = itemView.findViewById(R.id.amount_rv_tv);
             categoryView = itemView.findViewById(R.id.category_rv_tv);
 
-            //dateLabelView = itemView.findViewById(R.id.date_label_rv);
             amountLabelView = itemView.findViewById(R.id.amount_label_rv);
             categoryLabelView = itemView.findViewById(R.id.category_label_rv);
 
             dateTestView = itemView.findViewById(R.id.date_test_rv);
             labelLayout = itemView.findViewById(R.id.label_layout_rv);
             transactionTypeIndicatorView = itemView.findViewById(R.id.transaction_type_indicator_imageView);
+
+            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    //Toast.makeText(TransactionActivity.this, "Test",Toast.LENGTH_SHORT).show();
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    // Vibrate for 500 milliseconds
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(5, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate(5);
+                    }
+                    return false;
+                }
+            });
+
         }
     }
 

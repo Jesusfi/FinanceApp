@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/darkmode_card_color">
+            app:cardBackgroundColor="@color/darkmode_card_color"
+            android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -34,8 +35,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:text="Total Amount"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/total_amount_text"
                     android:textColor="@color/secondary_text_color"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -47,7 +48,7 @@
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="2dp"
                     android:gravity="center"
-                    android:text="$2,403.87"
+                    android:text="@string/test_amount_text"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="46sp" />
@@ -57,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:text="View Transactions"
+                    android:text="@string/view_transactions_text"
                     android:textColor="@color/deposit_color"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -68,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="Envelopes"
+            android:text="@string/envelopes_text"
             android:textColor="@color/secondary_headers_color"
             android:textSize="20sp"
             android:textStyle="bold" />

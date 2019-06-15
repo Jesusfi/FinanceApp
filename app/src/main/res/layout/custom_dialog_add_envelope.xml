@@ -31,8 +31,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:capitalize="words"
-                android:hint="Category"
-                android:inputType="text"
+                android:hint="@string/category"
+                android:inputType="text|textCapSentences"
                 android:maxLines="1"
                 android:textColor="@color/white" />
         </android.support.design.widget.TextInputLayout>
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Goal Amount"
+                android:hint="@string/goal_amount_text"
                 android:inputType="numberDecimal"
                 android:textColor="@color/white"
                 android:textColorHint="@color/colorAccent" />

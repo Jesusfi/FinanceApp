@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="New Transaction"
+        android:text="@string/new_transaction_text"
         android:textColor="@color/white"
         android:textSize="22sp"
         android:textStyle="bold" />
@@ -25,10 +25,11 @@
             android:id="@+id/new_transaction_amount_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Amount"
+            android:hint="@string/enter_amount_text"
             android:textSize="20sp"
             android:inputType="numberDecimal"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:importantForAutofill="no" />
     </android.support.design.widget.TextInputLayout>
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -40,11 +41,12 @@
             android:id="@+id/new_transaction_memo_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Memo"
-            android:textSize="18sp"
-            android:inputType="text"
+            android:hint="@string/enter_memo_text"
+            android:inputType="text|textCapSentences"
             android:maxLines="1"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:importantForAutofill="no" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
@@ -52,5 +54,5 @@
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update" />
+        android:text="@string/update_text" />
 </LinearLayout>

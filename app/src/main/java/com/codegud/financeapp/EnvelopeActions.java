@@ -1,10 +1,13 @@
 package com.codegud.financeapp;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -391,8 +394,11 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
         LinearLayout labelLayout;
         TextView dateTestView;
         ImageView transactionTypeIndicatorView;
+        CardView cardView;
         MyViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            cardView = itemView.findViewById(R.id.cardView);
 
             categoryView = itemView.findViewById(R.id.category_rv_tv);
             amountView = itemView.findViewById(R.id.amount_rv_tv);
@@ -405,6 +411,22 @@ public class EnvelopeActions extends AppCompatActivity implements AddTransaction
             dateTestView = itemView.findViewById(R.id.date_test_rv);
 
             transactionTypeIndicatorView = itemView.findViewById(R.id.transaction_type_indicator_imageView);
+
+
+            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    // Vibrate for 500 milliseconds
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(5, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate(5);
+                    }
+                    return false;
+                }
+            });
         }
     }
 
